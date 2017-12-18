@@ -46,7 +46,7 @@ def func_merge(val):
         if(val ==  "R G B"):
             image=Image.merge("RGB",(r,g,b))
         elif(val ==  "R B G"):
-            print 'yes'
+            #'yes'
             image = Image.merge("RGB",(r,b,g))
         elif(val ==  "B R G"):
             image=Image.merge("RGB",(b,r,g))
@@ -123,7 +123,7 @@ def blend(val,path):
     if(val=='-'):
         if(alpha>.1):
             alpha -=.1
-    print alpha
+    #alpha
     imagb = Image.open(path)
 
     image = Image.blend(ima_c,imagb,alpha)
@@ -139,23 +139,53 @@ def func_flip(val):
     imz.append(image)
     show_img()
 #/home/zephyr/Pictures/boku_dake.jpg
-def ini_crop(event,x1,y1):
+x1=x2=y1=y2=0
+def ini_crop(event):
+    global x1,y1
     x1=event.x
     y1= event.y
-    print x1,y1
-def en_crop(event,x2,y2):
+    #x1,y1
+
+def en_crop(event):
+    global x2,y2
     x2=event.x
     y2= event.y
+    #x2,y2
 
+def crop_bind():
+    global img
+    img.bind('<Button-1>',ini_crop)
+    img.bind('<Button-3>',en_crop)
+hel=1
 def func_crop():
-    global leftframe,image,imz
-    x1=y2=x2=y1=0
-    leftframe.bind('<Button-1>',lambda event : ini_crop(event ,x1,y1))
-    leftframe.bind('<Button-2>',lambda event : en_crop(event ,x2,y2))
-
-    image.crop((x1,y1,x2,y2))
-    imz.append(image)
-    show_img()
+    global image,imz,x1,x2,y1,y2,img,hel
+    crop_bind()
+    if(hel):
+        err=Tk()
+        err.wm_title("How To Use Crop")
+        err.config(bg="#2b2b2b")
+        err_la = Label(err,text="Left On the image to select starting point and right click for selecting end point then click in crop to crop image", wraplength=600,font="Tahoma 15 bold",fg='Red',bg="#2b2b2b")
+        err_la.grid(row=0,pady="10px",padx="10px")
+        hel=0
+    if(x1 == x2 == y1 == y2 == 0):
+        pass
+    else:
+        if(x1<x2):
+            if(y1<y2):
+                image=image.crop((x1,y1,x2,y2))
+            else:
+                image=image.crop((x1,y2,x2,y1))
+        else:
+            if(y1<y2):
+                image=image.crop((x2,y1,x1,y2))
+            else:
+                image=image.crop((x2,y2,x1,y1))
+        imz.append(image)
+        show_img()
+        img.unbind('<Button-1>')
+        img.unbind('<Button-3>')
+        x1=x2=y1=y2=0
+    #"yes"
 
 def blend_func(bl,bl_txt,path):
     global image , ima_c,alpha,t1
